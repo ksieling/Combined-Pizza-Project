@@ -55,6 +55,8 @@
       $shippingzip = $_POST['shippingzip'];
       $shippingemail = $_POST['shippingemail'];
 	  $totalPrice = $_POST['totalPrice'];
+	  $cctype = $_POST['cctype'];
+	  $cardnumber = $_POST['cardnumber'];
 	  
 	  echo("Thank you, " . $billingname . ", for your order.<br />");
 	  echo("You have ordered a " . $size . " " . $crust . " pizza, with the following toppings:<br />");
@@ -106,7 +108,37 @@
        echo "An email was sent to " . $billingemail . " to confirm your order.";
      }
 
-
+     try {
+       $dbh = new PDO('sqlite:database/pizzadatabase.db');
+	   
+	   $dbh->query("CREATE TABLE pizzaOrders (Id INTEGER PRIMARY KEY, billingname TEXT NOT NULL, billingaddress TEXT NOT NULL, billingcity TEXT NOT NULL, billingstate TEXT NOT NULL, billingzip TEXT NOT NULL, billingemail TEXT NOT NULL, price TEXT NOT NULL, cardtype TEXT NOT NULL, orderdate TIMESTAMP NOT NULL)");
+	   
+	   $dbh->exec("INSERT INTO pizzaOrders (billingname, billingaddress, billingcity, billingstate, billingzip, billingemail, price, cardtype, orderdate) VALUES ($billingname, $billingaddress, $billingcity, $billingstate, $billingzip, $billingemail, $totalPrice, $cctype, DATETIME('NOW'));");
+	   
+	   //now output the data to a simple html table...
+       print "<table border=1>";
+       print "<tr><td>Id</td><td>Name</td><td>Address</td><td>City</td><td>State</td><td>Zip</td><td>Email</td><td>Price</td><td>Card</td><td>Date</td></tr>";
+      $result = $dbh->query('SELECT * FROM pizzaOrders');
+      foreach($result as $row)
+      {
+        print "<tr><td>".$row['Id']."</td>";
+        print "<td>".$row['billingname']."</td>";
+        print "<td>".$row['billingaddress']."</td>";
+        print "<td>".$row['billingcity']."</td>";
+        print "<td>".$row['billingstate']."</td>";
+        print "<td>".$row['billingzip']."</td>";
+        print "<td>".$row['billingemail']."</td>";
+        print "<td>".$row['price']."</td>";
+        print "<td>".$row['cardtype']."</td>";
+        print "<td>".$row['orderdate']."</td></tr>";
+      }
+      print "</table>";
+	   
+	   $dbh = NULL;
+	 }
+	 catch(PDOException $e) {
+		 echo($e->getMessage());
+	 }
 
 
  
