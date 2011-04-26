@@ -1,12 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Order Sent</title>
-<link rel="stylesheet" type="text/css" href="css/pizza.css" />
-</head>
-
-<body>
 <?php 
    session_start();
    if(($_SESSION['security_code'] == $_POST['security_code']) && (!empty($_SESSION['security_code'])) ) {
@@ -105,19 +96,19 @@
        echo "We tried to send an email, but it failed.";
      }
      else {
-       echo "An email was sent to " . $billingemail . " to confirm your order.";
+       echo "An email was sent to " . $billingemail . " to confirm your order.<br /><br />";
      }
 
      try {
        $dbh = new PDO('sqlite:database/pizzadatabase.db');
 	   
-	   $dbh->query("CREATE TABLE pizzaOrders (Id INTEGER PRIMARY KEY, billingname TEXT NOT NULL, billingaddress TEXT NOT NULL, billingcity TEXT NOT NULL, billingstate TEXT NOT NULL, billingzip TEXT NOT NULL, billingemail TEXT NOT NULL, price TEXT NOT NULL, cardtype TEXT NOT NULL, orderdate TIMESTAMP NOT NULL)");
+	   $dbh->exec('CREATE TABLE pizzaOrders (Id INTEGER PRIMARY KEY, billingname CHAR(30), billingaddress CHAR(30), billingcity CHAR(30), billingstate CHAR(30), billingzip CHAR(30), billingemail CHAR(30), price CHAR(30), cardtype CHAR(30))');
 	   
-	   $dbh->exec("INSERT INTO pizzaOrders (billingname, billingaddress, billingcity, billingstate, billingzip, billingemail, price, cardtype, orderdate) VALUES ($billingname, $billingaddress, $billingcity, $billingstate, $billingzip, $billingemail, $totalPrice, $cctype, DATETIME('NOW'));");
+	   $dbh->exec("INSERT INTO pizzaOrders (billingname, billingaddress, billingcity, billingstate, billingzip, billingemail, price, cardtype) VALUES ('$billingname', '$billingaddress', '$billingcity', '$billingstate', '$billingzip', '$billingemail', '$totalPrice', '$cctype')");
 	   
 	   //now output the data to a simple html table...
        print "<table border=1>";
-       print "<tr><td>Id</td><td>Name</td><td>Address</td><td>City</td><td>State</td><td>Zip</td><td>Email</td><td>Price</td><td>Card</td><td>Date</td></tr>";
+       print "<tr><td>Id</td><td>Name</td><td>Address</td><td>City</td><td>State</td><td>Zip</td><td>Email</td><td>Price</td><td>Card</td></tr>";
       $result = $dbh->query('SELECT * FROM pizzaOrders');
       foreach($result as $row)
       {
@@ -130,7 +121,6 @@
         print "<td>".$row['billingemail']."</td>";
         print "<td>".$row['price']."</td>";
         print "<td>".$row['cardtype']."</td>";
-        print "<td>".$row['orderdate']."</td></tr>";
       }
       print "</table>";
 	   
@@ -149,7 +139,3 @@
 	  echo("<a href='index.php'>Return</a> to the form.");
    }
 ?>
-
-
-</body>
-</html>
