@@ -1,9 +1,42 @@
 <?php 
-   session_start();
+   //session_start();
+   $_SESSION['billingname'] = $_POST['billingname'];
+  $_SESSION['billingaddress'] = $_POST['billingaddress'];
+  $_SESSION['billingcity'] = $_POST['billingcity'];
+  $_SESSION['billingstate'] = $_POST['billingstate'];
+  $_SESSION['billingzip'] = $_POST['billingzip'];
+  $_SESSION['billingemail'] = $_POST['billingemail'];
+  $_SESSION['shippingname'] = $_POST['shippingname'];
+  $_SESSION['shippingaddress'] = $_POST['shippingaddress'];
+  $_SESSION['shippingcity'] = $_POST['shippingcity'];
+  $_SESSION['shippingstate'] = $_POST['shippingstate'];
+  $_SESSION['shippingzip'] = $_POST['shippingzip'];
+  $_SESSION['shippingemail'] = $_POST['shippingemail'];
+  $_SESSION['size'] = $_POST['size'];
+  $_SESSION['crust'] = $_POST['crust'];
+  $_SESSION['cctype'] = $_POST['cctype'];
+  $_SESSION['cardNumber'] = $_POST['cardNumber'];
+  
+  $billingname = $_POST['billingname'];
+  $billingaddress = $_POST['billingaddress'];
+  $billingcity = $_POST['billingcity'];
+  $billingstate = $_POST['billingstate'];
+  $billingzip = $_POST['billingzip'];
+  $billingemail = $_POST['billingemail'];
+  $shippingname = $_POST['shippingname'];
+  $shippingaddress = $_POST['shippingaddress'];
+  $shippingcity = $_POST['shippingcity'];
+  $shippingstate = $_POST['shippingstate'];
+  $shippingzip = $_POST['shippingzip'];
+  $shippingemail = $_POST['shippingemail'];
+  $totalPrice = $_POST['totalPrice'];
+  $cctype = $_POST['cctype'];
+  $cardnumber = $_POST['cardNumber'];
+  
    if(($_SESSION['security_code'] == $_POST['security_code']) && (!empty($_SESSION['security_code'])) ) {
       // Insert you code for processing the form here, e.g emailing the submission, entering it into a database.
       include 'includes/ini.php';
-	  $size = $_POST['size'];
+	  $size = $_SESSION['size'];
       switch($size)
       {
         case "10.00":
@@ -22,7 +55,7 @@
           $size="Small";
           break;
       }
-	  $crust = $_POST['crust'];
+	  $crust = $_SESSION['crust'];
 	  $toppings = $_POST["topping"];
 	  if(empty($toppings))
 	    {
@@ -32,23 +65,14 @@
 		  {
 			$alltops = implode(", ",$toppings);
 		  }
+      $totalPrice = $_POST['totalPrice'];
+	  if (!$totalPrice)
+	  {
+	  	$numToppings = $_POST['topping'];
+	    $toppingPrice = count($numToppings) * 0.75;
+	    $totalPrice = ($toppingPrice + $_SESSION['size']) * 1.06;
+	  }
 
-      $billingname = $_POST['billingname'];
-      $billingaddress = $_POST['billingaddress'];
-      $billingcity = $_POST['billingcity'];
-      $billingstate = $_POST['billingstate'];
-      $billingzip = $_POST['billingzip'];
-      $billingemail = $_POST['billingemail'];
-      $shippingname = $_POST['shippingname'];
-      $shippingaddress = $_POST['shippingaddress'];
-      $shippingcity = $_POST['shippingcity'];
-      $shippingstate = $_POST['shippingstate'];
-      $shippingzip = $_POST['shippingzip'];
-      $shippingemail = $_POST['shippingemail'];
-	  $totalPrice = $_POST['totalPrice'];
-	  $cctype = $_POST['cctype'];
-	  $cardnumber = $_POST['cardnumber'];
-	  
 	  echo("Thank you, " . $billingname . ", for your order.<br />");
 	  echo("You have ordered a " . $size . " " . $crust . " pizza, with the following toppings:<br />");
 	  echo $alltops . "<br /><br />";
@@ -120,7 +144,7 @@
         print "<td>".$row['billingzip']."</td>";
         print "<td>".$row['billingemail']."</td>";
         print "<td>".$row['price']."</td>";
-        print "<td>".$row['cardtype']."</td>";
+        print "<td>".$row['cardtype']."</td></tr>";
       }
       print "</table>";
 	   
@@ -129,13 +153,9 @@
 	 catch(PDOException $e) {
 		 echo($e->getMessage());
 	 }
-
-
- 
       unset($_SESSION['security_code']);
    } else {
       // Insert your code for showing an error message here
-	  echo("Your captcha answer was incorect, please try again.<br />");
+	  echo("Your captcha answer was incorrect, please try again.<br />");
 	  echo("<a href='index.php'>Return</a> to the form.");
    }
-?>
